@@ -12,13 +12,46 @@ export default function RegisterForm() {
 	const {
 		register,
 		handleSubmit,
+		setError,
 		formState: { errors },
 	} = useForm<RegisterInput>({
 		resolver: zodResolver(registerScheme),
 	});
 
-	function onSubmit(data: RegisterInput) {
-		console.log(data);
+	async function onSubmit(data: RegisterInput) {
+		const response = await fetch(
+			"/api/auth/register",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			}
+		);
+
+		const result = await response.json();
+
+		if (!response.ok) {
+		    if (result.errors) {
+		        // ValidationError — set ke masing-masing field
+		        Object.entries(result.errors).forEach(([field, messages]) => {
+		            setError(field as keyof RegisterInput, {
+		                type: "server",
+		                message: (messages as string[])[0],
+		            });
+		        });
+		    } else if (result.error) {
+		        // ConflictError / error umum — set ke root form, bukan field spesifik
+		        setError("root", {
+		            type: "server",
+		            message: result.error,
+		        });
+		    }
+		    return;
+		}
+
+		console.log(result);
 	}
 
 	return (
@@ -75,7 +108,14 @@ export default function RegisterForm() {
 							{errors.password.message}
 						</p>
 					)}
+
 				</div>
+
+				{errors.root && (
+				    <p className="text-sm text-red-500 text-center">
+				        {errors.root.message}
+				    </p>
+				)}
 
 				<Button
 					type="submit"

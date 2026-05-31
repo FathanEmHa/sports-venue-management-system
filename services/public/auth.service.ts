@@ -1,23 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { registerScheme, RegisterInput } from "@/validators/public/auth.validator";
-import { ConflictError, ValidationError } from "@/exceptions/errors";
 import { hashPassword } from "@/lib/bcrypt";
+import { ValidationError } from "@/exceptions/errors/validation-error";
+import { ConflictError } from "@/exceptions/errors/conflict-error";
 
-export async function register() {
-	const RegisterInput = {
-		name: "njing123",
-		email: "njing@mail.com",
-		password: "njing123",
-	};
+export async function registerService(data: RegisterInput) {
 
-	const validatedResult = registerScheme.safeParse(RegisterInput);
+	const validatedResult = registerScheme.safeParse(data);
 
 	if (!validatedResult.success) {
 		throw new ValidationError(
 			validatedResult.error.flatten().fieldErrors
 		);
-
-		return;
 	};
 
 	const validatedUser = validatedResult.data;
@@ -51,24 +45,5 @@ export async function register() {
 		},
 	});
 
-	console.log("User created: ", user);
+	return user;
 };
-
-register()
-	.then(async () => {
-		await prisma.$disconnect();
-	})
-	.catch(async (e) => {
-		if (e instanceof ValidationError) {
-			console.log(e.errors);
-		}
-
-		if (e instanceof Error) {
-			console.error(e.message);
-		} else {
-			console.error(e);
-		}
-
-		await prisma.$disconnect();
-		process.exit(1);
-	});
