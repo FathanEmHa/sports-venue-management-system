@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+
+  name      String
+  email     String   @unique
+  password  String
+
+  role      Role     @default(USER)
+
+  bookings  Booking[]
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VenueType {
+  id        Int      @id @default(autoincrement())
+
+  name      String   @unique
+
+  venues    Venue[]
+
+  createdAt DateTime @default(now())
+}
+
+model Venue {
+  id           Int        @id @default(autoincrement())
+
+  name         String
+  price        Int
+  location     String
+  imageUrl     String
+
+  venueTypeId  Int
+  venueType    VenueType  @relation(fields: [venueTypeId], references: [id], onDelete: Restrict)
+
+  bookings     Booking[]
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Booking {
+  id           Int             @id @default(autoincrement())
+
+  userId       Int
+  user         User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  venueId      Int
+  venue        Venue           @relation(fields: [venueId], references: [id], onDelete: Restrict)
+
+  bookingDate  DateTime
+
+  startHour    Int
+  endHour      Int
+
+  status       BookingStatus   @default(PENDING)
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
