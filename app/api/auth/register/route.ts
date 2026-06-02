@@ -1,12 +1,13 @@
-import { withErrorHandler } from "@/lib/withErrorHandler"
-import { registerService } from "@/services/public/auth.service";
+import { withErrorHandler } from "@/lib/with-error-handler";
+import { successResponse } from "@/lib/api-response";
 
 export const POST = withErrorHandler(
 	async (req) => {
 		const body = await req.json();
 
-		const user = await registerService(body);
+		const user =
+			await registerService(body);
 
-		return Response.json(user);
+		return successResponse(user, 201);
 	}
 );

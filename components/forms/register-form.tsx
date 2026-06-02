@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { handleApiFormError } from "@/lib/form-error-handler";
 
 import { registerScheme, RegisterInput } from "@/validators/public/auth.validator.ts";
 
@@ -32,24 +33,7 @@ export default function RegisterForm() {
 
 		const result = await response.json();
 
-		if (!response.ok) {
-		    if (result.errors) {
-		        // ValidationError — set ke masing-masing field
-		        Object.entries(result.errors).forEach(([field, messages]) => {
-		            setError(field as keyof RegisterInput, {
-		                type: "server",
-		                message: (messages as string[])[0],
-		            });
-		        });
-		    } else if (result.error) {
-		        // ConflictError / error umum — set ke root form, bukan field spesifik
-		        setError("root", {
-		            type: "server",
-		            message: result.error,
-		        });
-		    }
-		    return;
-		}
+		handleApiFormError(result, setError);
 
 		console.log(result);
 	}
