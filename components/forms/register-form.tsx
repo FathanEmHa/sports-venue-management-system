@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,8 @@ import { handleApiFormError } from "@/lib/form-error-handler";
 import { registerScheme, RegisterInput } from "@/validators/public/auth.validator.ts";
 
 export default function RegisterForm() {
+	const router = useRouter();
+
 	const {
 		register,
 		handleSubmit,
@@ -30,8 +33,12 @@ export default function RegisterForm() {
 				body: JSON.stringify(data),
 			}
 		);
-
 		const result = await response.json();
+
+		if (result.success) {
+	        router.push("/dashboard"); // or show a success toast, etc.
+	        return;
+	    }
 
 		handleApiFormError(result, setError);
 
