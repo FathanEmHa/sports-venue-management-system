@@ -36,7 +36,7 @@ export default function RegisterForm() {
 		const result = await response.json();
 
 		if (result.success) {
-	        router.push("/dashboard"); // or show a success toast, etc.
+	        router.push("/login"); // or show a success toast, etc.
 	        return;
 	    }
 

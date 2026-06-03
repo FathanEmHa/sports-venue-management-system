@@ -36,6 +36,7 @@ export default function LoginForm() {
 		const result = await response.json();
 
 		if (result.success) {
+			console.log("LOGIN SUCCESS");
 	        router.push("/dashboard"); // or show a success toast, etc.
 	        return;
 	    }
@@ -99,6 +100,17 @@ export default function LoginForm() {
 				>
 					Login
 				</Button>
+
+				<p className="text-center text-sm text-muted-foreground">
+					Don't have an account?{" "}
+					<a
+						href="/register"
+						className="font-medium text-primary hover:underline"
+					>
+						Register
+					</a>
+				</p>
+
 			</form>
 		</div>
 	);
