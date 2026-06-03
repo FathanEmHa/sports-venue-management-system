@@ -9,7 +9,7 @@ export function withErrorHandler(
     try {
       return await handler(req);
     } catch (error) {
-      console.error("[withErrorHandler]", error);
+      // console.error("[withErrorHandler]", error);
       
       if (error instanceof ValidationError) {
         return errorResponse(

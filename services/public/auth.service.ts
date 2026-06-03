@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { registerScheme, RegisterInput } from "@/validators/public/auth.validator";
-import { hashPassword } from "@/lib/bcrypt";
+import { registerScheme, loginScheme, RegisterInput, LoginInput } from "@/validators/public/auth.validator";
+import { hashPassword, comparePassword } from "@/lib/bcrypt";
 import { ValidationError } from "@/exceptions/errors/validation-error";
 import { ConflictError } from "@/exceptions/errors/conflict-error";
+import { UnauthorizedError } from "@/exceptions/errors/unauthorized-error";
 
 export async function registerService(data: RegisterInput) {
 
@@ -46,4 +47,46 @@ export async function registerService(data: RegisterInput) {
 	});
 
 	return user;
+};
+
+export async function loginService(data: LoginInput) {
+
+	const validatedResult = loginScheme.safeParse(data);
+
+	if (!validatedResult.success) {
+		throw new ValidationError(
+			validatedResult.error.flatten().fieldErrors
+		);
+	};
+
+	const validatedUser = validatedResult.data;
+
+	const user =
+		await prisma.user.findUnique({
+			where: {
+				email: validatedUser.email,
+			},
+		});
+
+	if (!user) {
+		throw new UnauthorizedError("Invalid email or password");
+	};
+
+	const isPasswordValid = 
+		await comparePassword(
+			validatedUser.password,
+			user.password,
+		);
+
+	if (!isPasswordValid) {
+		throw new UnauthorizedError("Invalid email or password");
+	};
+
+	return {
+		id: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
+	};
+
 };

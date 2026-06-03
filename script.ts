@@ -22,7 +22,7 @@ async function main() {
 	// 		name: "Olahraga",
 	// 	},
 	// });
-	// console.log("Venue Tyoe: ", venueTypeCreate);
+	// console.log("Venue Type: ", venueTypeCreate);
 
 	// VENUE
 	// const venueCreate = await prisma.venue.create({

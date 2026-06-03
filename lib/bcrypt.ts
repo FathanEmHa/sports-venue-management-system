@@ -7,4 +7,14 @@ export async function hashPassword(
 		password,
 		10
 	);
+};
+
+export async function comparePassword(
+	password: string,
+	hashedPassword: string
+) {
+	return bcrypt.compare(
+		password,
+		hashedPassword
+	);
 }

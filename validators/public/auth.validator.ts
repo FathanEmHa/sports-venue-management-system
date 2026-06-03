@@ -6,4 +6,10 @@ export const registerScheme = z.object({
 	password: z.string().min(6, "Password must contain at least 6 letters"),
 });
 
+export const loginScheme = z.object({
+	email: z.string().email("Format email invalid"),
+	password: z.string().min(6, "Password must contain at least 6 letters"),
+});
+
+export type LoginInput = z.infer<typeof loginScheme>;
 export type RegisterInput = z.infer<typeof registerScheme>;
