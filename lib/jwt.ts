@@ -17,14 +17,16 @@ export async function generateToken(payload: {
 		.sign(secret);
 }
 
+export type JwtPayload = {
+	id: number;
+	role: "ADMIN" | "USER";
+};
+
 export async function verifyToken(
 	token: string
-) {
+): Promise<JwtPayload> {
 	const { payload } =
-		await jwtVerify(
-			token,
-			secret
-		);
+		await jwtVerify(token, secret);
 
-	return payload;
+	return payload as JwtPayload;
 }
