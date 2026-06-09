@@ -1,5 +1,5 @@
 import { withErrorHandler } from "@/lib/with-error-handler";
-import { createVenueService } from "@/services/admin/venue-type.service";
+import { createVenueTypeService } from "@/services/admin/venue-type.service";
 import { successResponse } from "@/lib/api-response";
 import { verifyToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
@@ -27,7 +27,7 @@ export const POST =
 				await req.json();
 
 			const venueType =
-				await createVenueService(
+				await createVenueTypeService(
 					body,
 					payload.role
 				);
