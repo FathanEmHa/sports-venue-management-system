@@ -34,7 +34,7 @@ export const POST = withErrorHandler(
 					7,
 			}
 		);
-
+		
 		return successResponse(user, 200);
 	}
 );
