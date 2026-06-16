@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { register } from "@/api/auth.api";
 import { handleApiFormError } from "@/lib/form-error-handler";
 
 import { registerScheme, RegisterInput } from "@/validators/public/auth.validator.ts";
@@ -22,27 +23,31 @@ export default function RegisterForm() {
 		resolver: zodResolver(registerScheme),
 	});
 
-	async function onSubmit(data: RegisterInput) {
-		const response = await fetch(
-			"/api/auth/register",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
+	async function onSubmit(
+		data: RegisterInput
+	) {
+		try {
+
+			const result =
+				await register(data);
+
+			if (result.success) {
+		        router.push("/login"); // or show a success toast, etc.
+		        return;
+		    }
+		} catch (error) {
+			if (
+				axios.isAxiosError(
+					error
+				)
+			) {
+				handleApiFormError(
+					error.response
+						?.data,
+					setError
+				);
 			}
-		);
-		const result = await response.json();
-
-		if (result.success) {
-	        router.push("/login"); // or show a success toast, etc.
-	        return;
-	    }
-
-		handleApiFormError(result, setError);
-
-		console.log(result);
+		}
 	}
 
 	return (

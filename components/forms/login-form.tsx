@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { handleApiFormError } from "@/lib/form-error-handler";
-
+import { login } from "@/api/auth.api";
 import { loginScheme, LoginInput } from "@/validators/public/auth.validator.ts";
 
 export default function LoginForm() {
@@ -22,28 +22,33 @@ export default function LoginForm() {
 		resolver: zodResolver(loginScheme),
 	});
 
-	async function onSubmit(data: LoginInput) {
-		const response = await fetch(
-			"/api/auth/login",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
+	async function onSubmit(
+		data: LoginInput
+	) {
+		try {
+			const result =
+				await login(data);
+
+			if (
+				result.success
+			) {
+				router.push(
+					"/dashboard"
+				);
 			}
-		);
-		const result = await response.json();
-
-		if (result.success) {
-			console.log("LOGIN SUCCESS");
-	        router.push("/dashboard"); // or show a success toast, etc.
-	        return;
-	    }
-
-		handleApiFormError(result, setError);
-
-		console.log(result);
+		} catch (error) {
+			if (
+				axios.isAxiosError(
+					error
+				)
+			) {
+				handleApiFormError(
+					error.response
+						?.data,
+					setError
+				);
+			}
+		}
 	}
 
 	return (

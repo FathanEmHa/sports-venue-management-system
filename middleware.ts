@@ -17,58 +17,100 @@ export async function middleware(
 	const pathname =
 		req.nextUrl.pathname;
 
-	// Public pages
 	const isAuthPage =
 		pathname === "/login" ||
 		pathname === "/register";
 
-	if (token) {
-		try {
-			await verifyToken(token);
+	// Not logged in
+	if (!token) {
+		const isProtected =
+			pathname.startsWith(
+				"/dashboard"
+			) ||
+			pathname.startsWith(
+				"/bookings"
+			) ||
+			pathname.startsWith(
+				"/profile"
+			) ||
+			pathname.startsWith(
+				"/venue-types"
+			);
 
-			if (isAuthPage) {
-				return NextResponse.redirect(
-					new URL(
-						"/dashboard",
-						req.url
-					)
-				);
-			}
+		if (isProtected) {
+			return NextResponse.redirect(
+				new URL(
+					"/login",
+					req.url
+				)
+			);
+		}
 
-			return NextResponse.next();
-		} catch {}
+		return NextResponse.next();
 	}
 
-	// Protected pages
-	const isProtected =
-		pathname.startsWith(
-			"/dashboard"
-		) ||
-		pathname.startsWith(
-			"/bookings"
-		) ||
-		pathname.startsWith(
-			"/profile"
+	try {
+		const payload =
+			await verifyToken(
+				token
+			);
+
+		// Logged in user opens login/register
+		if (isAuthPage) {
+			return NextResponse.redirect(
+				new URL(
+					"/dashboard",
+					req.url
+				)
+			);
+		}
+
+		// Admin-only pages
+		const isAdminPage =
+			pathname.startsWith(
+				"/venue-types"
+			);
+
+		if (
+			isAdminPage &&
+			payload.role !==
+				"ADMIN"
+		) {
+			return NextResponse.redirect(
+				new URL(
+					"/dashboard",
+					req.url
+				)
+			);
+		}
+
+		return NextResponse.next();
+	} catch {
+		const response =
+			NextResponse.redirect(
+				new URL(
+					"/login",
+					req.url
+				)
+			);
+
+		response.cookies.delete(
+			"token"
 		);
 
-	if (isProtected) {
-		return NextResponse.redirect(
-			new URL(
-				"/login",
-				req.url
-			)
-		);
+		return response;
 	}
-
-	return NextResponse.next();
 }
 
 export const config = {
 	matcher: [
 		"/login",
 		"/register",
+
 		"/dashboard/:path*",
 		"/bookings/:path*",
 		"/profile/:path*",
+
+		"/venue-types/:path*",
 	],
 };

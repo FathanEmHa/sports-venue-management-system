@@ -1,5 +1,7 @@
 "use client";
 
+import api from "@/lib/axios";
+
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { handleApiFormError } from "@/lib/form-error-handler";
-
-import { venueTypeScheme, VenueTypeInput } from "@/validators/public/venue-type-validator";
+import { venueType } from "@/api/venue-type.api";
+import { venueTypeScheme, VenueTypeInput } from "@/validators/admin/venue-type.validator";
 
 export default function VenueTypeForm() {
 	const {
@@ -24,27 +26,24 @@ export default function VenueTypeForm() {
 	async function onSubmit(
 		data: VenueTypeInput
 	) {
-		const response = await fetch(
-			"/api/venues/venue-types",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type":
-						"application/json",
-				},
-				body: JSON.stringify(data),
-			}
-		);
+		try {
 
-		const result =
-			await response.json();
+			const result =
+				await venueType(data);
 
-		handleApiFormError(result, setError);
-
-		console.log(result);
-
-		if (response.ok) {
 			reset();
+		} catch (error) {
+			if (
+				axios.isAxiosError(
+					error
+				)
+			) {
+				handleApiFormError(
+					error.response
+						?.data,
+					setError
+				);
+			}
 		}
 	}
 

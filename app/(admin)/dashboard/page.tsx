@@ -1,3 +1,5 @@
+import LogoutButton from "@/components/shared/logout-button";
+
 export default function DashboardPage() {
 	return (
 		<div className="p-8">
@@ -5,10 +7,7 @@ export default function DashboardPage() {
 				Dashboard
 			</h1>
 
-			<p className="mt-2">
-				If you can see this page,
-				the login redirect worked.
-			</p>
+			<LogoutButton />
 		</div>
 	);
 }
