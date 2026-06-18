@@ -48,40 +48,65 @@ export default function VenueTypeForm() {
 	}
 
 	return (
-		<form
-			onSubmit={handleSubmit(
-				onSubmit
-			)}
-			className="space-y-4"
+		<div
+			className="
+				rounded-xl
+				border
+				bg-card
+				p-6
+			"
 		>
-			<div>
-				<Label>
-					Venue Type Name
-				</Label>
+			<h2
+				className="
+					mb-4
+					text-lg
+					font-semibold
+				"
+			>
+				Create Venue Type
+			</h2>
 
-				<Input
-					placeholder="Futsal"
-					{...register(
-						"name"
+			<form
+				onSubmit={handleSubmit(
+					onSubmit
+				)}
+				className="space-y-4"
+			>
+				<div>
+					<Label>
+						Venue Type Name
+					</Label>
+
+					<Input
+						placeholder="Futsal"
+						{...register(
+							"name"
+						)}
+					/>
+
+					{errors.name && (
+						<p className="text-sm text-red-500">
+							{errors.name.message}
+						</p>
 					)}
-				/>
+				</div>
 
-				{errors.name && (
+				<Button
+					className="
+						bg-brand
+						text-brand-foreground
+						hover:bg-brand/90
+					"
+				>
+					Create
+				</Button>
+
+				{errors.root && (
 					<p className="text-sm text-red-500">
-						{errors.name.message}
+						{errors.root.message}
 					</p>
 				)}
-			</div>
-
-			<Button type="submit">
-				Create
-			</Button>
-
-			{errors.root && (
-				<p className="text-sm text-red-500">
-					{errors.root.message}
-				</p>
-			)}
-		</form>
+			</form>
+		</div>
 	);
 }

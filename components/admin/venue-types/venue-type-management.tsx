@@ -1,22 +1,24 @@
 import VenueTypeForm from "./venue-type-form";
 import VenueTypeTable from "./venue-type-table";
 
-export default function VenueTypeManagement() {
+type VenueType = {
+	id: number;
+	name: string;
+};
+
+type Props = {
+	data: VenueType[];
+};
+
+export default function VenueTypeManagement({
+	data,
+}: Props) {
 	return (
-		<div className="space-y-8">
+		<div className="space-y-6">
 			<VenueTypeForm />
 
 			<VenueTypeTable
-				data={[
-					{
-						id: 1,
-						name: "Futsal",
-					},
-					{
-						id: 2,
-						name: "Basketball",
-					},
-				]}
+				data={data}
 			/>
 		</div>
 	);

@@ -1,5 +1,5 @@
 import { withErrorHandler } from "@/lib/with-error-handler";
-import { createVenueTypeService } from "@/services/admin/venue-type.service";
+import { createVenueTypeService, getVenueTypesService } from "@/services/admin/venue-type.service";
 import { successResponse } from "@/lib/api-response";
 import { verifyToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
@@ -38,3 +38,14 @@ export const POST =
 			);
 		}
 	);
+
+export const GET = withErrorHandler(
+	async () => {
+		const venueTypes =
+			await getVenueTypesService();
+
+		return successResponse(
+			venueTypes
+		);
+	}
+);

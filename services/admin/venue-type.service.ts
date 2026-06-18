@@ -46,3 +46,16 @@ export async function createVenueTypeService(
 
 	return venueType;
 }
+
+export async function getVenueTypesService() {
+	return prisma.venueType.findMany({
+		orderBy: {
+			id: "desc",
+		},
+		select: {
+			id: true,
+			name: true,
+			createdAt: true,
+		},
+	});
+}

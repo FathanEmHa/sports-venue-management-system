@@ -11,3 +11,12 @@ export async function venueType(
 
 	return response.data;
 }
+
+export async function getVenueTypes() {
+	const response =
+		await api.get(
+			"/venues/venue-types"
+		);
+
+	return response.data.data;
+}
