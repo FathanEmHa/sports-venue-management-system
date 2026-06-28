@@ -1,48 +1,42 @@
 "use client";
 
-import api from "@/lib/axios";
-
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { handleApiFormError } from "@/lib/form-error-handler";
-import { venueType } from "@/api/venue-type.api";
-import { venueTypeScheme, VenueTypeInput } from "@/validators/admin/venue-type.validator";
+import { createVenueType } from "@/api/venue-type.api";
+import {
+	venueTypeScheme,
+	VenueTypeInput,
+} from "@/validators/admin/venue-type.validator";
 
 export default function VenueTypeForm() {
+	const router = useRouter();
+
 	const {
 		register,
 		handleSubmit,
 		setError,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 		reset,
 	} = useForm<VenueTypeInput>({
 		resolver: zodResolver(venueTypeScheme),
 	});
 
-	async function onSubmit(
-		data: VenueTypeInput
-	) {
+	async function onSubmit(data: VenueTypeInput) {
 		try {
-
-			const result =
-				await venueType(data);
+			await createVenueType(data);
 
 			reset();
+			router.refresh();
 		} catch (error) {
-			if (
-				axios.isAxiosError(
-					error
-				)
-			) {
-				handleApiFormError(
-					error.response
-						?.data,
-					setError
-				);
+			if (axios.isAxiosError(error)) {
+				handleApiFormError(error.response?.data, setError);
 			}
 		}
 	}
@@ -61,48 +55,48 @@ export default function VenueTypeForm() {
 					mb-4
 					text-lg
 					font-semibold
+					text-foreground
 				"
 			>
 				Create Venue Type
 			</h2>
 
 			<form
-				onSubmit={handleSubmit(
-					onSubmit
-				)}
+				onSubmit={handleSubmit(onSubmit)}
 				className="space-y-4"
 			>
 				<div>
-					<Label>
+					<Label className="text-foreground">
 						Venue Type Name
 					</Label>
 
 					<Input
-						placeholder="Futsal"
-						{...register(
-							"name"
-						)}
+						placeholder="e.g. Futsal, Basketball"
+						className="mt-1"
+						{...register("name")}
 					/>
 
 					{errors.name && (
-						<p className="text-sm text-red-500">
+						<p className="mt-1 text-sm text-destructive">
 							{errors.name.message}
 						</p>
 					)}
 				</div>
 
 				<Button
+					type="submit"
+					disabled={isSubmitting}
 					className="
 						bg-brand
 						text-brand-foreground
 						hover:bg-brand/90
 					"
 				>
-					Create
+					{isSubmitting ? "Creating..." : "Create"}
 				</Button>
 
 				{errors.root && (
-					<p className="text-sm text-red-500">
+					<p className="text-sm text-destructive">
 						{errors.root.message}
 					</p>
 				)}

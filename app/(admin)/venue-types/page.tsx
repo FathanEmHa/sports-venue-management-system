@@ -1,16 +1,8 @@
 import VenueTypeManagement from "@/components/admin/venue-types/venue-type-management";
-
-import {
-	getVenueTypes,
-} from "@/api/venue-type.api";
+import { getVenueTypesService } from "@/services/admin/venue-type.service";
 
 export default async function VenueTypesPage() {
-	const venueTypes =
-		await getVenueTypes();
+	const venueTypes = await getVenueTypesService();
 
-	return (
-		<VenueTypeManagement
-			data={venueTypes}
-		/>
-	);
+	return <VenueTypeManagement data={venueTypes} />;
 }
